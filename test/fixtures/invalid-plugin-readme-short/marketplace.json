@@ -1,0 +1,11 @@
+{
+	"metadata": { "pluginRoot": "plugins" },
+	"plugins": [
+		{
+			"name": "qux",
+			"description": "A valid marketplace entry whose plugin README is under 40 words.",
+			"version": "1.0.0",
+			"source": "qux"
+		}
+	]
+}

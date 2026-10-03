@@ -1,0 +1,11 @@
+{
+	"metadata": { "pluginRoot": "plugins" },
+	"plugins": [
+		{
+			"name": "corge",
+			"description": "A valid marketplace entry whose .mcp.json server has neither a command nor a url.",
+			"version": "1.0.0",
+			"source": "corge"
+		}
+	]
+}

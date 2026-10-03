@@ -9,6 +9,23 @@ description: Start here — the umbrella skill for the FlowLeap Patent AI CLI. M
 entry-point skill: it verifies the setup and routes to the specialist skills.
 Always pass `--json` for agent parsing; use `--dry-run` before protected calls.
 
+**In a chat client with the FlowLeap connector** (claude.ai, Claude Desktop and
+mobile, Cowork, ChatGPT), there is no shell: skip the install, doctor, and
+command steps below, and call the tool of the same name through the connector.
+Sign-in is the connector's OAuth, and keys are the stored keys from the
+Patent-data keys page. The command-to-tool table and the rules are in
+`flowleap-shared` ("Chat clients with the FlowLeap connector"). The one-call
+verbs map like this:
+
+| Verb | Tool |
+|---|---|
+| `summary` | `get_patent_summary` |
+| `compare` | `compare_patents` |
+| `timeline` | `get_prosecution_timeline` |
+| patent term (no verb; `tools run get_patent_term`) | `get_patent_term` |
+| `figures` | `get_patent_image` |
+| `convert-number` | `convert_patent_number` |
+
 ## Start Here
 
 ```bash
@@ -100,14 +117,14 @@ no `--base-url` needed. Developing the FlowLeap backend itself? Add
 ## One surface for patent data
 
 Every data command — `patent`, `ops`, `uspto`, `citation`, `legal`, `npl`,
-`academic`, `analytics`, `ocr`, and the one-call verbs — runs on the **Tools
-facade**: named tools invoked through `/v1/tools`, one success envelope, one
+`academic`, `analytics`, `ocr`, `patstat`, and the one-call verbs — runs on the
+**Tools facade**: named tools invoked through `/v1/tools`, one success envelope, one
 error contract, a self-describing registry. The per-source **provider routes**
 they used to call are **retired endpoints** — permanently removed, answering
 `410 Gone` with a machine-readable successor, and never reused.
 
-Named non-facade exceptions: PATSTAT (`flowleap patstat …`), auth/OAuth, key
-validation, and the raw `api request` escape hatch.
+Only auth/OAuth, key validation and the raw `api request` escape hatch run
+outside the facade.
 
 Practical consequence: a command failing with exit **8** (`endpoint_gone`) means
 your CLI build is stale, not that the capability is gone. Read

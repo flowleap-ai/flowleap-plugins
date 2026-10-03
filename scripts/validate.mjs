@@ -22,6 +22,12 @@ const PLUGIN_MANIFESTS = [
 	'plugin.json',
 ];
 
+/** Minimum word count of a plugin folder's README.md (Anthropic directory rule). */
+const MIN_README_WORDS = 40;
+
+/** MCP server transports Claude Code accepts in a plugin's .mcp.json. */
+const MCP_SERVER_TYPES = ['stdio', 'http', 'sse', 'ws'];
+
 /**
  * Parse the top-level scalar keys of a YAML frontmatter block. Only the flat
  * `key: value` pairs are needed here (name, description); nested/indented lines
@@ -116,6 +122,58 @@ function validatePlugin(pluginDir, declaredName, errors, seenSkills) {
 		}
 		if (manifest.version !== undefined && typeof manifest.version !== 'string') {
 			errors.push(`${label}: manifest 'version' must be a string when present`);
+		}
+	}
+
+	// Anthropic's plugin directory requires a README of 40+ words inside the
+	// plugin folder itself (the repo-root README does not count).
+	const readmePath = join(pluginDir, 'README.md');
+	if (!existsSync(readmePath)) {
+		errors.push(`${label}: no README.md in the plugin folder (${pluginDir})`);
+	} else {
+		const words = readFileSync(readmePath, 'utf8').split(/\s+/).filter(Boolean).length;
+		if (words < MIN_README_WORDS) {
+			errors.push(`${label}: README.md has ${words} words; it must have ${MIN_README_WORDS} or more`);
+		}
+	}
+
+	// An MCP config (.mcp.json at the plugin root) is optional; when present it
+	// must parse and wrap its servers in an `mcpServers` object, each server
+	// being stdio (`command`) or remote (`url`). A remote url must be http(s)
+	// (ws(s) for a `ws` server): URL.canParse alone accepts "foo:bar".
+	const mcpPath = join(pluginDir, '.mcp.json');
+	if (existsSync(mcpPath)) {
+		const mcp = readJson(mcpPath, errors, `${label} .mcp.json`);
+		if (mcp !== undefined) {
+			const servers = mcp?.mcpServers;
+			if (!servers || typeof servers !== 'object' || Array.isArray(servers)) {
+				errors.push(`${label}: .mcp.json must have an 'mcpServers' object`);
+			} else {
+				for (const [name, cfg] of Object.entries(servers)) {
+					const where = `${label}: .mcp.json server '${name}'`;
+					if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) {
+						errors.push(`${where} must be an object`);
+						continue;
+					}
+					if (cfg.type !== undefined && !MCP_SERVER_TYPES.includes(cfg.type)) {
+						errors.push(`${where} 'type' must be one of ${MCP_SERVER_TYPES.join(', ')} (got '${cfg.type}')`);
+					}
+					if (typeof cfg.command !== 'string' && typeof cfg.url !== 'string') {
+						errors.push(`${where} needs a 'command' (stdio) or a 'url' (remote)`);
+					} else if (typeof cfg.url === 'string') {
+						const schemes = cfg.type === 'ws' ? ['ws:', 'wss:'] : ['http:', 'https:'];
+						let protocol;
+						try {
+							protocol = new URL(cfg.url).protocol;
+						} catch {
+							protocol = undefined;
+						}
+						if (!schemes.includes(protocol)) {
+							errors.push(`${where} url '${cfg.url}' must be an absolute ${schemes.map(s => s.slice(0, -1)).join('/')} URL`);
+						}
+					}
+				}
+			}
 		}
 	}
 

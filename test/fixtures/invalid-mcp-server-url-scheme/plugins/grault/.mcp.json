@@ -1,0 +1,5 @@
+{
+	"mcpServers": {
+		"flowleap": { "type": "http", "url": "foo:bar" }
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"metadata": { "pluginRoot": "plugins" },
+	"plugins": [
+		{
+			"name": "quux",
+			"description": "A valid marketplace entry whose plugin .mcp.json has no mcpServers object.",
+			"version": "1.0.0",
+			"source": "quux"
+		}
+	]
+}
