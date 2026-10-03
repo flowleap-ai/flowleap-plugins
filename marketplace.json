@@ -5,8 +5,8 @@
 	"plugins": [
 		{
 			"name": "flowleap",
-			"description": "FlowLeap Patent AI — the complete patent-research skill set for coding and research agents. Data access: EPO CQL and USPTO Lucene patent search, full document data (claims, descriptions, families, legal status), academic and non-patent literature, patent-law references (EPC, MPEP), enriched office-action citations, PATSTAT portfolio analytics and Graph Analytics (worldwide DOCDB citation networks, citation/family paths between two patents, applicant co-applicant networks). End-to-end recipes: prior-art / novelty search, freedom-to-operate, patent landscape, claim analysis, patent dossiers, literature review, and disposable HTML dashboards with verified numbers and full data provenance. Role personas: patent attorney, IP analyst, researcher, startup founder. Everything runs through the FlowLeap CLI (npm i -g flowleap); skills never hold credentials.",
-			"version": "2.2.0",
+			"description": "FlowLeap Patent AI — the complete patent-research skill set for coding and research agents. Data access: EPO CQL and USPTO Lucene patent search, full document data (claims, descriptions, families, legal status), academic and non-patent literature, patent-law references (EPC, MPEP), enriched office-action citations, PATSTAT portfolio analytics and Graph Analytics (worldwide DOCDB citation networks, citation/family paths between two patents, applicant co-applicant networks). End-to-end recipes: prior-art / novelty search, freedom-to-operate, patent landscape, claim analysis, patent dossiers, literature review, and disposable HTML dashboards with verified numbers and full data provenance. Role personas: patent attorney, IP analyst, researcher, startup founder. The skills run through the FlowLeap CLI (npm i -g flowleap) in a terminal, or through the included FlowLeap connector (the hosted MCP server at api.flowleap.co/mcp, OAuth sign-in) in Claude Code, claude.ai, and Cowork; skills never hold credentials.",
+			"version": "2.3.0",
 			"source": "flowleap"
 		}
 	]

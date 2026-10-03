@@ -252,6 +252,15 @@ In `.claude-plugin/marketplace.json` (the `plugins` array):
 Keep the two descriptions identical — the checker makes sure both files list the
 same packs.
 
+Give the pack a `plugins/my-pack/README.md` of 40 words or more that says what
+the pack does and how to install it. The checker rejects a pack without one.
+
+> **The `flowleap` pack ships the FlowLeap connector config.** Its
+> `plugins/flowleap/.mcp.json` points to the hosted MCP server
+> (`https://api.flowleap.co/mcp`), so its skills also work in claude.ai and
+> Cowork. A new pack does not need its own `.mcp.json`: write your skill steps
+> with `flowleap` CLI commands, as rule 3 says.
+
 > **The root `skills/` folder is optional for you.** It contains symlinks that let
 > the `npx skills` command find skills; a maintainer will add one for your skill
 > during review. You do not need to create symlinks yourself.

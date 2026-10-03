@@ -1,0 +1,3 @@
+{
+	"flowleap": { "type": "http", "url": "https://api.flowleap.co/mcp" }
+}

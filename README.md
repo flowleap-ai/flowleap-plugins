@@ -6,7 +6,7 @@ installing anything published here skips the "plugins can run code" trust prompt
 because FlowLeap curates every entry through pull-request review.
 
 Everything ships as **one plugin** — [`flowleap`](plugins/flowleap) — so a
-single install brings the complete 24-skill set:
+single install brings the complete 32-skill set:
 
 - **Data-access skills** (`flowleap-*`) — drive the FlowLeap CLI and backend
   facade: auth, provider keys, EPO/USPTO/OPS search, academic & non-patent
@@ -38,6 +38,14 @@ Every pack drives the FlowLeap CLI / backend facade — no in-app typed tool
 names — so the same skills work in the FlowLeap IDE, Claude Code, and any agent
 with the CLI available.
 
+The `flowleap` plugin also ships the FlowLeap connector config
+([`plugins/flowleap/.mcp.json`](plugins/flowleap/.mcp.json)): one HTTP MCP
+server, `flowleap`, at the hosted MCP server `https://api.flowleap.co/mcp`
+(OAuth sign-in). With it, the skills also work in claude.ai and Cowork, where
+they call the connector tools instead of CLI commands. The plugin README
+([`plugins/flowleap/README.md`](plugins/flowleap/README.md)) describes the
+pack for the plugin directory listing.
+
 ## Free forever
 
 Per [ADR 0006](https://github.com/abdullahatrash/flowleap-agent-v2/blob/main/docs/adr/0006-curated-free-marketplace-v1.md),
@@ -54,7 +62,9 @@ marketplace.json                     # marketplace index the FlowLeap app reads 
 plugins/
   flowleap/                          # THE plugin (single plugin root)
     .claude-plugin/plugin.json       #   Claude plugin manifest → loads in FlowLeap app + Claude Code
-    skills/                          #   all 24 skills: flowleap-*, recipe-*, persona-*
+    .mcp.json                        #   FlowLeap connector config (HTTP MCP server → api.flowleap.co/mcp)
+    README.md                        #   plugin README (40+ words; read by the plugin directory)
+    skills/                          #   all 32 skills: flowleap-*, recipe-*, persona-*
 skills/                              # aggregation for the `npx skills` CLI (symlinks — see below)
 scripts/validate.mjs                 # zero-dependency CI validator
 test/fixtures/                       # deliberately broken marketplaces the validator must reject
@@ -86,7 +96,7 @@ repo the synced copy lives **once**, under
    them.
 
    ```
-   npx skills add flowleap-ai/flowleap-plugins --list   # lists all 24 skills
+   npx skills add flowleap-ai/flowleap-plugins --list   # lists all 32 skills
    npx skills add flowleap-ai/flowleap-plugins          # installs them into your agent
    ```
 
@@ -160,6 +170,8 @@ agent), lives in [CONTRIBUTING.md](CONTRIBUTING.md), with a copy-paste starter i
 - `.claude-plugin/marketplace.json`: present, well-formed, and lists exactly the
   same plugins as the root index.
 - Each plugin manifest: `name` matches its folder; `description` present.
+- Each plugin folder: a `README.md` of 40+ words; a `.mcp.json`, when present,
+  parses and has an `mcpServers` object.
 - Each `SKILL.md`: frontmatter `name` matches its folder and `description` is
   present.
 - The root `skills/` aggregation: every entry resolves to a real `SKILL.md`.
