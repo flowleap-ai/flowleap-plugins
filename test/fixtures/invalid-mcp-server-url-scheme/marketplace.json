@@ -1,0 +1,11 @@
+{
+	"metadata": { "pluginRoot": "plugins" },
+	"plugins": [
+		{
+			"name": "grault",
+			"description": "A valid marketplace entry whose .mcp.json server url is not http(s).",
+			"version": "1.0.0",
+			"source": "grault"
+		}
+	]
+}

@@ -257,9 +257,14 @@ the pack does and how to install it. The checker rejects a pack without one.
 
 > **The `flowleap` pack ships the FlowLeap connector config.** Its
 > `plugins/flowleap/.mcp.json` points to the hosted MCP server
-> (`https://api.flowleap.co/mcp`), so its skills also work in claude.ai and
-> Cowork. A new pack does not need its own `.mcp.json`: write your skill steps
-> with `flowleap` CLI commands, as rule 3 says.
+> (`https://api.flowleap.co/mcp`). In Claude Code the plugin starts that
+> server, and in claude.ai and Cowork the Connectors tab of the pack shows
+> FlowLeap. A new pack does not need its own `.mcp.json`: write your skill
+> steps with `flowleap` CLI commands, as rule 3 says.
+>
+> If a pack has a `.mcp.json`, the checker requires that it parses, that it has
+> an `mcpServers` object, and that each server has a `command` or an http(s)
+> `url`.
 
 > **The root `skills/` folder is optional for you.** It contains symlinks that let
 > the `npx skills` command find skills; a maintainer will add one for your skill

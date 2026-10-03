@@ -26,10 +26,14 @@ Add the marketplace and install the plugin in Claude Code:
 
 The plugin includes the FlowLeap connector configuration (`.mcp.json`). It
 points to the FlowLeap hosted MCP server at `https://api.flowleap.co/mcp`. You
-sign in with OAuth when the connector asks. Thus the skills work in Claude
-Code, and also in claude.ai and Cowork, where the skills call the connector
-tools. In a terminal, the skills can also use the FlowLeap CLI
-(`npm i -g flowleap`).
+sign in with OAuth when the connector asks.
+
+- In Claude Code, the plugin starts the FlowLeap server.
+- In claude.ai and Cowork, the directory bundle carries the connector config,
+  so the Connectors tab of the pack shows FlowLeap.
+
+In a chat client, the skills call the connector tools named in their connector
+table. In a terminal, the skills use the FlowLeap CLI (`npm i -g flowleap`).
 
 You add your Patent-Data Keys (EPO OPS, USPTO ODP) on the Patent-data keys page
 of the FlowLeap dashboard, never in the chat.

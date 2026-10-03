@@ -34,15 +34,16 @@ For other agents (Cursor, Codex, and more), use the `npx skills` CLI:
 npx skills add flowleap-ai/flowleap-plugins
 ```
 
-Every pack drives the FlowLeap CLI / backend facade — no in-app typed tool
-names — so the same skills work in the FlowLeap IDE, Claude Code, and any agent
-with the CLI available.
+The skills use FlowLeap CLI commands in a terminal, and the FlowLeap connector
+tools of the same name in a chat client. So the same skills work in the
+FlowLeap IDE, Claude Code, and any agent with the CLI available.
 
 The `flowleap` plugin also ships the FlowLeap connector config
 ([`plugins/flowleap/.mcp.json`](plugins/flowleap/.mcp.json)): one HTTP MCP
 server, `flowleap`, at the hosted MCP server `https://api.flowleap.co/mcp`
-(OAuth sign-in). With it, the skills also work in claude.ai and Cowork, where
-they call the connector tools instead of CLI commands. The plugin README
+(OAuth sign-in). In Claude Code, the plugin starts this server. In claude.ai
+and Cowork, the directory bundle carries this config, so the Connectors tab of
+the pack shows FlowLeap. The plugin README
 ([`plugins/flowleap/README.md`](plugins/flowleap/README.md)) describes the
 pack for the plugin directory listing.
 
@@ -100,10 +101,11 @@ repo the synced copy lives **once**, under
    npx skills add flowleap-ai/flowleap-plugins          # installs them into your agent
    ```
 
-> These skills call the **FlowLeap CLI** (`flowleap patent search`,
-> `flowleap ops claims`, …) and reference no in-app typed tool names. That is
-> what makes them multi-harness. Install the [FlowLeap CLI](https://github.com/flowleap-ai/flowleap-cli)
-> to use them outside the FlowLeap app.
+> In a terminal, these skills call the **FlowLeap CLI** (`flowleap patent search`,
+> `flowleap ops claims`, …). In a chat client, they call the FlowLeap connector
+> tools named in their connector table. That is what makes them multi-harness.
+> Install the [FlowLeap CLI](https://github.com/flowleap-ai/flowleap-cli) to use
+> them in a terminal outside the FlowLeap app.
 
 ## Canonical source: this repo is a synced distribution
 
@@ -171,7 +173,8 @@ agent), lives in [CONTRIBUTING.md](CONTRIBUTING.md), with a copy-paste starter i
   same plugins as the root index.
 - Each plugin manifest: `name` matches its folder; `description` present.
 - Each plugin folder: a `README.md` of 40+ words; a `.mcp.json`, when present,
-  parses and has an `mcpServers` object.
+  parses and has an `mcpServers` object; each server has a `command` or an
+  http(s) `url`, and a `type`, when present, is `stdio`, `http`, `sse`, or `ws`.
 - Each `SKILL.md`: frontmatter `name` matches its folder and `description` is
   present.
 - The root `skills/` aggregation: every entry resolves to a real `SKILL.md`.
