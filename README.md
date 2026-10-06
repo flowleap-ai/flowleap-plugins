@@ -6,7 +6,7 @@ installing anything published here skips the "plugins can run code" trust prompt
 because FlowLeap curates every entry through pull-request review.
 
 Everything ships as **one plugin** — [`flowleap`](plugins/flowleap) — so a
-single install brings the complete 32-skill set:
+single install brings the complete 33-skill set:
 
 - **Data-access skills** (`flowleap-*`) — drive the FlowLeap CLI and backend
   facade: auth, provider keys, EPO/USPTO/OPS search, academic & non-patent
@@ -65,7 +65,7 @@ plugins/
     .claude-plugin/plugin.json       #   Claude plugin manifest → loads in FlowLeap app + Claude Code
     .mcp.json                        #   FlowLeap connector config (HTTP MCP server → api.flowleap.co/mcp)
     README.md                        #   plugin README (40+ words; read by the plugin directory)
-    skills/                          #   all 32 skills: flowleap-*, recipe-*, persona-*
+    skills/                          #   all 33 skills: flowleap-*, recipe-*, persona-*
 skills/                              # aggregation for the `npx skills` CLI (symlinks — see below)
 scripts/validate.mjs                 # zero-dependency CI validator
 test/fixtures/                       # deliberately broken marketplaces the validator must reject
@@ -97,7 +97,7 @@ repo the synced copy lives **once**, under
    them.
 
    ```
-   npx skills add flowleap-ai/flowleap-plugins --list   # lists all 32 skills
+   npx skills add flowleap-ai/flowleap-plugins --list   # lists all 33 skills
    npx skills add flowleap-ai/flowleap-plugins          # installs them into your agent
    ```
 

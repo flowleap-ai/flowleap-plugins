@@ -1,6 +1,6 @@
 # FlowLeap Patent AI
 
-The `flowleap` plugin is the FlowLeap Skill Pack: 32 skills for patent and IP
+The `flowleap` plugin is the FlowLeap Skill Pack: 33 skills for patent and IP
 work with AI agents.
 
 - **Data-access skills** (`flowleap-*`): EPO and USPTO patent search, full
