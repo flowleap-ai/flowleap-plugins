@@ -10,8 +10,8 @@ single install brings the complete 33-skill set:
 
 - **Data-access skills** (`flowleap-*`) — drive the FlowLeap CLI and backend
   facade: auth, provider keys, EPO/USPTO/OPS search, academic & non-patent
-  literature, legal references, citations, PATSTAT portfolio analytics, and
-  the unified `/v1/tools` facade.
+  literature, patent law read from the office's own page, citations, PATSTAT
+  portfolio analytics, and the unified `/v1/tools` facade.
 - **Recipes** (`recipe-*`) — end-to-end workflows: prior-art search,
   freedom-to-operate, patent landscape, claim analysis, patent-to-report,
   academic literature review, and verified-data HTML dashboards

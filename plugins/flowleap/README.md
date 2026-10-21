@@ -5,8 +5,8 @@ work with AI agents.
 
 - **Data-access skills** (`flowleap-*`): EPO and USPTO patent search, full
   document data (claims, descriptions, families, legal status), academic and
-  non-patent literature, patent-law references, office-action citations, and
-  PATSTAT portfolio and graph analytics.
+  non-patent literature, patent law read from the office's own page,
+  office-action citations, and PATSTAT portfolio and graph analytics.
 - **Recipes** (`recipe-*`): end-to-end workflows such as prior-art search,
   freedom-to-operate, patent landscape, claim analysis, and HTML dashboards
   with verified numbers.
