@@ -15,6 +15,7 @@ passes. This guards the validator itself against silently going lax.
 | `invalid-mcp-json` | A plugin `.mcp.json` with the server map at the top level, not under `mcpServers`. |
 | `invalid-mcp-server-no-endpoint` | A `.mcp.json` server with neither a `command` nor a `url`. |
 | `invalid-mcp-server-url-scheme` | A `.mcp.json` server whose `url` (`foo:bar`) is not an http(s) URL. |
+| `invalid-manifest-skills-path` | A plugin manifest whose `skills` key names a directory that does not exist. |
 
 Each fixture plugin carries a 40+ word `README.md`, so that it fails only for its own broken thing.
 

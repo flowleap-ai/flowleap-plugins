@@ -65,7 +65,8 @@ plugins/
     .claude-plugin/plugin.json       #   Claude plugin manifest → loads in FlowLeap app + Claude Code
     .mcp.json                        #   FlowLeap connector config (HTTP MCP server → api.flowleap.co/mcp)
     README.md                        #   plugin README (40+ words; read by the plugin directory)
-    skills/                          #   all 33 skills: flowleap-*, recipe-*, persona-*
+    skills/                          #   30 skills: flowleap-*, recipe-*, persona-*
+    cli-skills/                      #   3 skills for the FlowLeap command-line tool only (auth, keys, tools)
 skills/                              # aggregation for the `npx skills` CLI (symlinks — see below)
 scripts/validate.mjs                 # zero-dependency CI validator
 test/fixtures/                       # deliberately broken marketplaces the validator must reject
@@ -76,7 +77,13 @@ test/fixtures/                       # deliberately broken marketplaces the vali
 The canonical skill content is authored upstream in flowleap-cli (see
 [below](#canonical-source-this-repo-is-a-synced-distribution)); within **this**
 repo the synced copy lives **once**, under
-`plugins/flowleap/skills/<name>/SKILL.md`. Three different tools consume it:
+`plugins/flowleap/skills/<name>/SKILL.md`, or `plugins/flowleap/cli-skills/<name>/SKILL.md`
+for a skill that works only with the FlowLeap command-line tool (`flowleap-auth`,
+`flowleap-keys`, `flowleap-tools`). `plugin.json` adds `cli-skills/` to the skills
+scan (`"skills": ["./cli-skills/"]`), so Claude Code loads all 33 skills. The
+FlowLeap Patent AI app (firm OS and desktop) copies only `plugins/flowleap/skills/`,
+so it shows and loads the 30 skills that work in the app. `sync.json` marks each
+CLI-only skill with `"dir": "cli-skills"`. Three different tools consume the pack:
 
 1. **FlowLeap app.** Reads the root `marketplace.json` (Open Plugin format),
    resolves each plugin's `source` directory, and loads its Claude-format
@@ -92,7 +99,7 @@ repo the synced copy lives **once**, under
    depth (`skills/<name>/SKILL.md`) — it does **not** descend into per-plugin
    `plugins/*/skills/` trees. So the root `skills/` directory here is an
    aggregation layer: each entry is a **relative symlink** to the canonical skill
-   under `plugins/flowleap/skills/`. Symlinks (not copies) keep a single source
+   under `plugins/flowleap/skills/` or `plugins/flowleap/cli-skills/`. Symlinks (not copies) keep a single source
    of truth with no drift; git preserves them and the `npx skills` walker follows
    them.
 
@@ -131,7 +138,7 @@ flowleap-cli release, then re-sync here.
    ```
    REF=$(node -p "require('./sync.json').ref")
    git -C ../flowleap-cli show "$REF:skills/<name>/SKILL.md" \
-     > plugins/<plugin>/skills/<name>/SKILL.md
+     > plugins/<plugin>/<dir>/<name>/SKILL.md   # <dir>: the entry's "dir", else skills
    npm run check-drift        # must pass (skips gracefully with no network)
    ```
 

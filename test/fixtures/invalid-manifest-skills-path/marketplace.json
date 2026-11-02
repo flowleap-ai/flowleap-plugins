@@ -1,0 +1,11 @@
+{
+	"metadata": { "pluginRoot": "plugins" },
+	"plugins": [
+		{
+			"name": "baz",
+			"description": "A valid marketplace entry whose manifest names a skills path that does not exist.",
+			"version": "1.0.0",
+			"source": "baz"
+		}
+	]
+}

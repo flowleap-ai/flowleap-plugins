@@ -59,8 +59,8 @@ async function main() {
 	console.log(`Checking ${skills.length} shipped skills against ${source}@${ref} ...`);
 
 	const drift = [];
-	for (const { name, plugin } of skills) {
-		const localPath = join(REPO_ROOT, 'plugins', plugin, 'skills', name, 'SKILL.md');
+	for (const { name, plugin, dir = 'skills' } of skills) {
+		const localPath = join(REPO_ROOT, 'plugins', plugin, dir, name, 'SKILL.md');
 		const url = rawUrl(source, ref, `${sourceSkillsDir}/${name}/SKILL.md`);
 
 		let local;

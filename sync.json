@@ -2,8 +2,9 @@
 	"$comment": "Single source of truth for the shipped SKILL.md files. Canonical skills live in flowleap-cli; this repo is a synced distribution. To update skills: bump 'ref' to a new flowleap-cli tag, re-copy the listed SKILL.md files byte-for-byte, and open a PR. scripts/check-drift.mjs fetches each skill from the pinned ref and fails CI if a shipped copy differs. Do NOT hand-edit shipped skills/ content \u2014 edit upstream in flowleap-cli, tag a release, then re-sync here.",
 	"source": "flowleap-ai/flowleap-cli",
 	"$refComment": "Pinned to the flowleap-cli release tag whose binary ships the documented commands. Never pin a bare main commit for a merge: merging publishes, and a pack documenting commands absent from the installed CLI breaks every user who installs it.",
-	"ref": "v0.12.3",
+	"ref": "v0.12.4",
 	"sourceSkillsDir": "skills",
+	"$dirComment": "A skill with \"dir\": \"cli-skills\" works only with the FlowLeap command-line tool. It ships in plugins/<plugin>/cli-skills/, which plugin.json adds to the skills scan, so Claude Code still loads it; the FlowLeap Patent AI app copies only plugins/flowleap/skills/ and does not get it. Without \"dir\", a skill ships in plugins/<plugin>/skills/.",
 	"skills": [
 		{
 			"name": "flowleap",
@@ -15,7 +16,8 @@
 		},
 		{
 			"name": "flowleap-auth",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-citation",
@@ -23,7 +25,8 @@
 		},
 		{
 			"name": "flowleap-keys",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-legal",
@@ -57,7 +60,8 @@
 		},
 		{
 			"name": "flowleap-tools",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-uspto",

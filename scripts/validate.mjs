@@ -177,10 +177,30 @@ function validatePlugin(pluginDir, declaredName, errors, seenSkills) {
 		}
 	}
 
-	const skillsDir = join(pluginDir, 'skills');
-	if (!isDir(skillsDir)) {
-		return; // a plugin may legitimately ship commands/agents only
+	// Claude Code scans skills/ and adds every directory that the manifest's
+	// `skills` key names (a path or an array of paths, each starting with ./).
+	const extraSkillPaths = manifest?.skills === undefined ? [] : [manifest.skills].flat();
+	const skillsDirs = [join(pluginDir, 'skills')];
+	for (const path of extraSkillPaths) {
+		if (typeof path !== 'string' || !path.startsWith('./')) {
+			errors.push(`${label}: manifest 'skills' entry ${JSON.stringify(path)} must be a path starting with ./`);
+		} else if (!isDir(join(pluginDir, path))) {
+			errors.push(`${label}: manifest 'skills' path '${path}' is not a directory`);
+		} else {
+			skillsDirs.push(join(pluginDir, path));
+		}
 	}
+	const inPlugin = new Set();
+	for (const skillsDir of skillsDirs.filter(isDir)) {
+		validateSkillsDir(skillsDir, label, declaredName, errors, seenSkills, inPlugin);
+	}
+}
+
+/**
+ * Validate every `<name>/SKILL.md` folder in one skills directory. `inPlugin`
+ * holds the names already seen in the plugin's other skills directories.
+ */
+function validateSkillsDir(skillsDir, label, declaredName, errors, seenSkills, inPlugin) {
 	for (const entry of readdirSync(skillsDir)) {
 		const skillDir = join(skillsDir, entry);
 		if (!isDir(skillDir)) {
@@ -204,6 +224,10 @@ function validatePlugin(pluginDir, declaredName, errors, seenSkills) {
 		if (!fm.description || !fm.description.trim()) {
 			errors.push(`${label}: skill '${entry}' frontmatter is missing 'description'`);
 		}
+		if (inPlugin.has(entry)) {
+			errors.push(`${label}: skill '${entry}' is in more than one skills directory of the plugin`);
+		}
+		inPlugin.add(entry);
 		if (seenSkills) {
 			const prior = seenSkills.get(entry);
 			if (prior !== undefined && prior !== declaredName) {

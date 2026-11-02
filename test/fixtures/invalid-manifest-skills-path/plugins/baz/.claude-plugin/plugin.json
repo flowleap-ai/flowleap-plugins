@@ -1,0 +1,6 @@
+{
+	"name": "baz",
+	"description": "Fixture plugin.",
+	"version": "1.0.0",
+	"skills": ["./missing-skills/"]
+}
