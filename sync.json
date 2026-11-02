@@ -4,15 +4,17 @@
 	"$refComment": "Pinned to the flowleap-cli release tag whose binary ships the documented commands. Never pin a bare main commit for a merge: merging publishes, and a pack documenting commands absent from the installed CLI breaks every user who installs it.",
 	"ref": "v0.12.4",
 	"sourceSkillsDir": "skills",
-	"$dirComment": "A skill with \"dir\": \"cli-skills\" works only with the FlowLeap command-line tool. It ships in plugins/<plugin>/cli-skills/, which plugin.json adds to the skills scan, so Claude Code still loads it; the FlowLeap Patent AI app copies only plugins/flowleap/skills/ and does not get it. Without \"dir\", a skill ships in plugins/<plugin>/skills/.",
+	"$dirComment": "The FlowLeap Patent AI app (firm OS and desktop) copies only plugins/flowleap/skills/, so that folder holds only the methods (recipe-*). A skill with \"dir\" ships in plugins/<plugin>/<dir>/ instead: \"cli-skills\" for the manuals of the FlowLeap command-line tool, \"persona-skills\" for the role prompts. plugin.json adds both folders to the skills scan, so Claude Code loads all 33 skills.",
 	"skills": [
 		{
 			"name": "flowleap",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-academic",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-auth",
@@ -21,7 +23,8 @@
 		},
 		{
 			"name": "flowleap-citation",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-keys",
@@ -30,33 +33,40 @@
 		},
 		{
 			"name": "flowleap-legal",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-npl",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-ops",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-patent",
 			"plugin": "flowleap",
-			"$comment": "Ships its references/ tree (search-statement.md) alongside SKILL.md \u2014 added in v0.10.0. check-drift guards only the SKILL.md; re-copy references/ on every re-sync."
+			"$comment": "Ships its references/ tree (search-statement.md) alongside SKILL.md \u2014 added in v0.10.0. check-drift guards only the SKILL.md; re-copy references/ on every re-sync.",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-patstat",
 			"plugin": "flowleap",
-			"$comment": "Ships its references/ tree (patstat-recipes.md) alongside SKILL.md — added in v0.8.6. check-drift guards only the SKILL.md; re-copy references/ on every re-sync."
+			"$comment": "Ships its references/ tree (patstat-recipes.md) alongside SKILL.md — added in v0.8.6. check-drift guards only the SKILL.md; re-copy references/ on every re-sync.",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-patstat-graph",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-shared",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "flowleap-tools",
@@ -65,23 +75,28 @@
 		},
 		{
 			"name": "flowleap-uspto",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "cli-skills"
 		},
 		{
 			"name": "persona-ip-analyst",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "persona-skills"
 		},
 		{
 			"name": "persona-patent-attorney",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "persona-skills"
 		},
 		{
 			"name": "persona-researcher",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "persona-skills"
 		},
 		{
 			"name": "persona-startup-founder",
-			"plugin": "flowleap"
+			"plugin": "flowleap",
+			"dir": "persona-skills"
 		},
 		{
 			"name": "recipe-academic-literature-review",

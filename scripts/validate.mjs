@@ -317,6 +317,23 @@ function validateMarketplace(root) {
 		}
 	}
 
+	// sync.json places each synced skill: plugins/<plugin>/<dir or skills>/<name>.
+	// The FlowLeap Patent AI app copies only plugins/flowleap/skills/, which
+	// therefore holds only the methods (recipe-*).
+	const syncPath = join(root, 'sync.json');
+	if (existsSync(syncPath)) {
+		const sync = readJson(syncPath, errors, 'sync.json');
+		for (const entry of sync?.skills ?? []) {
+			const dir = entry.dir ?? 'skills';
+			if (!existsSync(join(root, 'plugins', entry.plugin, dir, entry.name, 'SKILL.md'))) {
+				errors.push(`sync.json: skill '${entry.name}' is not at plugins/${entry.plugin}/${dir}/${entry.name}/SKILL.md`);
+			}
+			if (entry.plugin === 'flowleap' && dir === 'skills' && !entry.name.startsWith('recipe-')) {
+				errors.push(`sync.json: skill '${entry.name}' is not a method (recipe-*), so it must not ship in plugins/flowleap/skills/, the folder the FlowLeap Patent AI app copies; give it a "dir"`);
+			}
+		}
+	}
+
 	// The root skills/ aggregation (for `npx skills`) must resolve to real SKILL.md files.
 	const rootSkillsDir = join(root, 'skills');
 	if (isDir(rootSkillsDir)) {
