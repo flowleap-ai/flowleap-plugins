@@ -41,6 +41,12 @@ constraint it strips that filter and retries once (a mis-guessed CPC class is a
 common cause of zero recall), then, if still empty, prints guidance to broaden
 to a title search. Watch stderr for these notes.
 
+**No user needs a USPTO key.** A USPTO read uses FlowLeap's House key inside
+the daily live data budget (300 live USPTO calls in one UTC day); an own free
+ODP key is optional and lifts that limit. A `liveUnavailableHint` is a wait
+("not now"): do not send the call again before its `retryAfterSeconds`, and
+continue with the work that needs no live USPTO call. See `flowleap-keys`.
+
 **Zero recall is not a key gate.** An empty result set, a truncated payload, or
 a 5xx keeps the normal recovery path above. The US office is gated only when a
 command you actually ran returned an explicit gate **code** — the CLI's
@@ -110,10 +116,21 @@ To verify a CPC class before constraining on one, query the official scheme —
 flowleap --json uspto grant 11800000              # granted patent by number
 flowleap --json uspto application 16123456        # application by number
 flowleap --json uspto continuity 16123456         # parent/child chain
+flowleap --json uspto application 16123456 --full # the whole record, no list cut
 ```
 
+`grant` and `application` answer the **summary view** by default: every field
+of the record, with the long lists (events, continuity, assignments, attorneys,
+PTA history) cut to their first rows. `truncated[]` names each cut list as
+`{ path, total, returned, tool }`. Read `truncated[]` before you count a list:
+`returned` rows are not all rows. For all rows of one list, call the `tool` the
+entry names (for example `uspto transactions` for `eventDataBag`). For the
+whole record, add `--full` (`view: "full"`); it can be more than 200 KB.
+Human and table output print each `truncated[]` entry as a note on stderr.
+
 Tools-facade equivalents: `get_us_grant` (`patent_number=`),
-`get_us_application` and `get_continuity` (both `application_number=`). A number
+`get_us_application` and `get_continuity` (both `application_number=`); the
+first two take `view=summary|full`. A number
 ODP has never ingested answers `patent_not_found` or `application_not_found` —
 a real absence, not a transport failure, so do not retry it.
 
@@ -145,6 +162,7 @@ documents are scanned images with no text layer) — no manual PDF handling.
 flowleap --json uspto documents 14412875 --code CTNF      # non-final rejections
 flowleap --json uspto documents 14412875 --code CTFR      # final rejections
 flowleap --json uspto documents 14412875 --direction incoming  # applicant filings
+flowleap --json uspto documents 14412875 --limit 100 --offset 100  # the next page
 
 # Read one document as markdown (documentIdentifier from the listing)
 flowleap uspto document-text 14412875 K5FCIIKNRXEAPX5 > final-rejection.md
@@ -156,14 +174,27 @@ Human/table output prints the markdown itself on stdout (metadata goes to
 stderr), so `document-text` pipes cleanly; `--json` wraps it in
 `{ pageCount, markdown, model, cached }`.
 
-The listing is filtered server-side and returned compacted —
-`{ applicationNumber, total, returned, documents }`, each record keeping its
-`downloadOptionBag` alongside a derived `pageCount`.
+The listing is filtered and paged server-side and returned compacted:
+`{ applicationNumber, total, matched, returned, offset, documentCodes,
+documents }`. `total` is the number of documents in the file wrapper, `matched`
+the number that pass `--code`/`--direction`, and `returned` the number in this
+answer (`--limit`, default 100, max 1000; `--offset` for the next page).
+`documentCodes` counts every document code in the file wrapper, with or without
+a filter. Each record has a derived `pageCount`. A record has its
+`downloadOptionBag` (the USPTO download URLs) only with `--download-options`
+(`include_download_options: true`); `document-text` does not need it.
+
+Read `matched` and `documentCodes` before you say that no document exists. An
+empty `documents` with `matched` 0 means no document passes the filter: look in
+`documentCodes` for the code that is there (for example `CTNF` but no `CTFR`).
+An empty `documents` with `matched` above 0 means the `--offset` is after the
+last document. When `returned` is less than `matched`, get the next page.
 
 First read of a long document can take tens of seconds (download + OCR);
 results are cached server-side for 7 days. Check `pageCount` in the listing
 before pulling very long documents.
 
 Tools-facade equivalents: `get_application_documents`
-(`application_number=`, optional `document_code=`/`direction=`) and
+(`application_number=`, optional `document_code=`/`direction=`/`limit=`/
+`offset=`/`include_download_options=`) and
 `read_application_document` (`application_number=`, `document_id=`).

@@ -63,7 +63,10 @@ backend policy, so text matching is not a contract.
 | `RATE_LIMITED` / `rate_limit_exceeded` | 429 | Back off; carries `retryAfterSeconds` |
 | `INTERNAL_ERROR` | 500 | Unexpected tool failure |
 | `subscription_required` | 402 | A human must subscribe; carries `upgradeUrl` |
-| `data_keys_required` / `patent_provider_key_invalid` | 400 | Key gate, each carrying `provider`. While stored keys are enabled, `data_keys_required` (and `patent_provider_key_invalid` when the rejected key is the stored key) also carries `keysPageUrl` and a human `nextStep` (`store-epo-keys` / `store-uspto-key`): give the human that FlowLeap "Patent-data keys" page link, and never ask for the key value in the chat — see `flowleap-keys` |
+| `live_data_budget_exhausted` / `trial_data_budget_exhausted` | 429 | Today's live data budget on FlowLeap's House keys is spent for that office (`provider`, `resets_at`, `retry_after`). With keyless access on, `error.liveUnavailable { reason, retryAfterSeconds }` is there too. A wait, not a missing key: an own free key is optional — see `flowleap-keys` |
+| `upstream_unavailable` | 503 | With `details.shared_quota`: the shared quota of the House keys is busy. Wait `Retry-After` |
+| `publication_index_not_configured` | 503 | `search_patents` `provider: "index"` on a server without the publication index: use `provider: "epo_ops"` |
+| `data_keys_required` / `patent_provider_key_invalid` | 400 | Key gate, each carrying `provider`. No user needs a key on a server with keyless access; `data_keys_required` comes from an older server, a server with keyless access off, or an office without a House key. While stored keys are enabled, `data_keys_required` (and `patent_provider_key_invalid` when the rejected key is the stored key) also carries `keysPageUrl` and a human `nextStep` (`store-epo-keys` / `store-uspto-key`): give the human that FlowLeap "Patent-data keys" page link, and never ask for the key value in the chat — see `flowleap-keys` |
 | `odp_api_key_missing` | 503 | USPTO ODP key gate |
 | `endpoint_gone` | 410 | Retired endpoint; the build is stale — see below |
 
@@ -80,7 +83,7 @@ request.
 `flowleap --json tools list` is authoritative and discoverable at runtime —
 read it rather than trusting this snapshot when the two disagree.
 
-Search: `search_patents` (`provider=epo_ops` CQL | `uspto` Lucene),
+Search: `search_patents` (`provider=index` plain words with the filters `cpc`, `applicant`, `inventor`, `office`, `kind`, `from`, `to` and `sort=relevance|date`, when the schema lists it — the publication index, the place to start a search | `provider=epo_ops` CQL | `uspto` Lucene),
 `search_register` (EP Register CQL, EP applications only — the one search
 with a representative index: `re=` representative, `op=` opponent, `nm=`
 name in any role, surname-first, for when a role index returns 0;
@@ -96,8 +99,9 @@ opponents), `get_citations`, `get_patent_image`
 content block you can see, with the page metadata in the text block),
 `convert_patent_number`.
 
-Text, by office: `get_claims` (EP and WO from EPO OPS; US from BigQuery, in
-English only), `get_description` (EP and WO from EPO OPS), `get_fulltext` (EP
+Text, by office: `get_claims` (EP and WO from EPO OPS; US from the publication
+index, in English only, with `source`, `asOf` and `coveredThrough` on the
+answer), `get_description` (EP and WO from EPO OPS), `get_fulltext` (EP
 and WO). Every other office answers `FULLTEXT_UNAVAILABLE`. For an office
 with no text source, use the family-member workaround in `flowleap-shared`.
 
@@ -105,6 +109,23 @@ US lookups and prosecution: `get_us_grant`, `get_us_application`,
 `get_continuity`, `get_transactions`, `get_assignments`, `get_foreign_priority`,
 `get_patent_term_adjustment`, `get_attorney`, `get_application_documents`,
 `read_application_document`.
+
+**Default answers are sized for a chat context.** Five tools return a summary
+or one page by default, and each answer says what it left out. Read those
+fields before you count rows or conclude that something is absent:
+
+| Tool | Default | What says the answer is partial | For the remaining data |
+|---|---|---|---|
+| `get_family` | `view: "summary"`: one page of `representatives.members` (`limit` 100), `countries`, no row list | `representativesReturned` < `representativesTotal`; `next` | `offset`, `country`, or `view: "full"` (every member and the `members` rows) |
+| `get_us_grant`, `get_us_application` | `view: "summary"`: long lists cut to their first rows | `truncated[]` = `{ path, total, returned, tool }` | the `tool` of the entry, or `view: "full"` |
+| `get_application_documents` | `limit` 100, no `downloadOptionBag` | `returned` < `matched`; `documentCodes` counts every code | `offset`; `include_download_options: true` |
+| `get_legal_status` | `limit` 50 | `eventsReturned` < `eventsTotal` | `offset`, or a higher `limit` (max 1000) |
+| `examiner_baseline` | `limit` 50 matrix rows, examiner-cited first; `members_limit` 25; `gaps_limit` 25 | `documentsReturned` < `documentsTotal`; `membersWalkedTotal`; `gapsTotal` | a higher `limit`, `members_limit` or `gaps_limit` (max 1000 each) |
+
+In `get_legal_status`, `eventDate` is the date of the event and `date` is the
+date the office recorded it. In `get_application_documents`, `matched` 0 means
+no document passes the filter; an empty page with `matched` above 0 means the
+`offset` is after the last document.
 
 Citations: `search_office_action_citations` (by application),
 `search_enriched_citations` (forward, by cited document), `get_citation_stats`.
